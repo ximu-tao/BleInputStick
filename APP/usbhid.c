@@ -16,7 +16,7 @@
 
 // 支持的最大接口数量
 #define USB_INTERFACE_MAX_NUM       2
-#define SHIFT 0x00
+#define SHIFT 0x80
 // 接口号的最大值
 #define USB_INTERFACE_MAX_INDEX      1
 
@@ -265,7 +265,6 @@ void USB_DevTransProcess(void)
                     len = R8_USB_RX_LEN;
                     if(SetupReqCode == 0x09)
                     {
-                        CapsLock = pEP0_DataBuf[0] & (1<<1);
                         PRINT("[%s] Num Lock\t", (pEP0_DataBuf[0] & (1<<0)) ? "*" : " ");
                         PRINT("[%s] Caps Lock\t", (pEP0_DataBuf[0] & (1<<1)) ? "*" : " ");
                         PRINT("[%s] Scroll Lock\n", (pEP0_DataBuf[0] & (1<<2)) ? "*" : " ");
@@ -757,10 +756,56 @@ void DevHIDKeyReport(uint8_t key)
 }
 
 
-void DevASCIIKeyReport( uint8_t c ){
-    HIDKey[2] = asciimap[c];
+void USBHIDReleaseAllKey(){
+    HIDKey[0] = 0;
+    HIDKey[1] = 0;
+    HIDKey[2] = 0;
+    HIDKey[3] = 0;
+    HIDKey[4] = 0;
+    HIDKey[5] = 0;
+    HIDKey[6] = 0;
+    HIDKey[7] = 0;
     memcpy(pEP1_IN_DataBuf, HIDKey, sizeof(HIDKey));
     DevEP1_IN_Deal(sizeof(HIDKey));
+}
+
+
+void DevASCIIKeyReport( uint8_t c ){
+
+    CapsLock = pEP0_DataBuf[0] & (1<<1);
+
+    if ( CapsLock ) {
+        DevHIDKeyReport( 0x39 );
+        mDelaymS(20);
+    }
+
+    if (c >= 136) {            // it's a non-printing key (not a modifier)
+            return;
+        }
+
+        if (c >= 128) {    // it's a modifier key
+            HIDKey[0] &= ~(1 << (c - 128));
+        } else {                // it's a printing key
+            HIDKey[2] = asciimap[c];
+            if (!HIDKey[2]) {
+                return ;
+            }
+            if (HIDKey[2] & SHIFT) {                            // it's a capital letter or other character reached with shift
+                HIDKey[0] = 0x02;    // the left shift modifier
+                HIDKey[2] &= 0x7F;
+            }else {
+                HIDKey[0] = 0;
+            }
+        }
+
+    memcpy(pEP1_IN_DataBuf, HIDKey, sizeof(HIDKey));
+    DevEP1_IN_Deal(sizeof(HIDKey));
+
+    if ( CapsLock ) {
+        mDelaymS(20);
+        HIDKey[0] = 0;
+        DevHIDKeyReport( 0x39 );
+    }
 }
 
 

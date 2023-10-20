@@ -30,6 +30,10 @@ extern void DevHIDMouseReport(uint8_t mouse);
 
 extern void DevHIDKeyReport(uint8_t key);
 
+extern void USBHIDReleaseAllKey();
+
+extern void DevASCIIKeyReport( uint8_t c );
+
 extern void DevWakeup(void);
 
 

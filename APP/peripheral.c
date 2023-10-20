@@ -701,7 +701,7 @@ static void printpUint8( uint8_t * pValue, uint16_t len){
         PRINT( "%c" ,   pValue[i]  );
         DevASCIIKeyReport( pValue[i] );
         mDelaymS(20);
-        DevHIDKeyReport(0x00);
+        USBHIDReleaseAllKey();
         mDelaymS(20);
     }
 
