@@ -17,6 +17,7 @@
 #include "gattprofile.h"
 #include "peripheral.h"
 
+#include "usbhid.h"
 /*********************************************************************
  * GLOBAL TYPEDEFS
  */
@@ -66,10 +67,30 @@ int main(void)
     UART1_DefInit();
 #endif
     PRINT("%s\n", VER_LIB);
+    PRINT("CH58X_BLEInit\n");
     CH58X_BLEInit();
     HAL_Init();
     GAPRole_PeripheralInit();
     Peripheral_Init();
+
+// USB Æô¶¯
+    PRINT("CH58X_USB_INIT\n");
+    USB_INIT();
+
+//    mDelaymS(1000);
+//    DevHIDKeyReport(0x1A);
+//    mDelaymS(20);
+//    DevHIDKeyReport(0x00);
+//    mDelaymS(20);
+//    DevHIDKeyReport(0x06);
+//    mDelaymS(20);
+//    DevHIDKeyReport(0x00);
+//    mDelaymS(20);
+//    DevHIDKeyReport(0x0B);
+//    mDelaymS(20);
+//    DevHIDKeyReport(0x00);
+
+    PRINT("CH58X_MAIN\n");
     Main_Circulation();
 }
 

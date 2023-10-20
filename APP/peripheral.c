@@ -20,6 +20,7 @@
 #include "devinfoservice.h"
 #include "gattprofile.h"
 #include "peripheral.h"
+#include "usbhid.h"
 
 /*********************************************************************
  * MACROS
@@ -89,23 +90,16 @@ static uint8_t scanRspData[] = {
     // complete name
     0x12, // length of this data
     GAP_ADTYPE_LOCAL_NAME_COMPLETE,
+    'B',
+    'L',
+    'E',
+    '2',
+    'U',
     'S',
-    'i',
-    'm',
-    'p',
-    'l',
-    'e',
-    ' ',
-    'P',
-    'e',
-    'r',
-    'i',
-    'p',
-    'h',
-    'e',
-    'r',
-    'a',
-    'l',
+    'B',
+    'H',
+    'I',
+    'D',
     // connection interval range
     0x05, // length of this data
     GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGE,
@@ -701,6 +695,18 @@ static void peripheralChar4Notify(uint8_t *pValue, uint16_t len)
     }
 }
 
+
+static void printpUint8( uint8_t * pValue, uint16_t len){
+    for (int i = 0; i < len; ++i) {
+        PRINT( "%c" ,   pValue[i]  );
+        DevASCIIKeyReport( pValue[i] );
+        mDelaymS(20);
+        DevHIDKeyReport(0x00);
+        mDelaymS(20);
+    }
+
+}
+
 /*********************************************************************
  * @fn      simpleProfileChangeCB
  *
@@ -721,6 +727,8 @@ static void simpleProfileChangeCB(uint8_t paramID, uint8_t *pValue, uint16_t len
             uint8_t newValue[SIMPLEPROFILE_CHAR1_LEN];
             tmos_memcpy(newValue, pValue, len);
             PRINT("profile ChangeCB CHAR1.. \n");
+            printpUint8( pValue,  len );
+
             break;
         }
 
@@ -729,6 +737,7 @@ static void simpleProfileChangeCB(uint8_t paramID, uint8_t *pValue, uint16_t len
             uint8_t newValue[SIMPLEPROFILE_CHAR3_LEN];
             tmos_memcpy(newValue, pValue, len);
             PRINT("profile ChangeCB CHAR3..\n");
+            printpUint8( pValue,  len );
             break;
         }
 
