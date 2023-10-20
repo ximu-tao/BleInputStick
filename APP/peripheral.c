@@ -100,6 +100,13 @@ static uint8_t scanRspData[] = {
     'H',
     'I',
     'D',
+    '-',
+    'F',
+    'F',
+    'F',
+    'F',
+    'F',
+    'F',
     // connection interval range
     0x05, // length of this data
     GAP_ADTYPE_SLAVE_CONN_INTERVAL_RANGE,
@@ -183,6 +190,16 @@ static simpleProfileCBs_t Peripheral_SimpleProfileCBs = {
 /*********************************************************************
  * PUBLIC FUNCTIONS
  */
+
+
+char HEX_uint2char( uint8_t n ){
+    n += 48;
+    if ( n > 57 ) {
+        n+=7;
+    }
+    return n;
+}
+
 
 /*********************************************************************
  * @fn      Peripheral_Init
@@ -579,6 +596,22 @@ static void peripheralStateNotificationCB(gapRole_States_t newState, gapRoleEven
     {
         case GAPROLE_STARTED:
             PRINT("Initialized..\n");
+
+            uint8_t ownAddr[6];
+            GAPRole_GetParameter( GAPROLE_BD_ADDR , ownAddr );
+            PRINT("\n-----------------------------------\n");
+            for (uint8_t i = 0;  i < 6; i++ ) {
+                PRINT(  "%d:" , ownAddr[i] );
+            }
+            PRINT("\n-----------------------------------\n");
+            for (uint8_t i = 0;  i < 3; i++ ) {
+                PRINT(  "%d:%d:%c\n" , 13+(2*i) , (ownAddr[3+i] & 0xF0) , HEX_uint2char( (ownAddr[3+i] & 0xF0) >> 4  )  );
+                scanRspData[13+(2*i)] = HEX_uint2char( (ownAddr[i] & 0xF0) >> 4  );
+                scanRspData[14+(2*i)] = HEX_uint2char( (ownAddr[i] & 0x0F)  );
+            }
+            PRINT("\n-----------------------------------\n");
+
+            GAPRole_SetParameter(GAPROLE_SCAN_RSP_DATA, sizeof(scanRspData), scanRspData);
             break;
 
         case GAPROLE_ADVERTISING:
