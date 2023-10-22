@@ -757,6 +757,24 @@ void DevHIDKeyReport(uint8_t key)
 }
 
 
+void CapsUnlock(){
+    CapsLock<<=1;
+    if ( pEP0_DataBuf[0] & (1<<1) ) {
+        DevHIDKeyReport( 0x39 );
+        mDelaymS( USB_HID_DELAY_MS );
+        CapsLock |=  1;
+    }
+}
+
+void RevertCapslock(){
+    if ( CapsLock & 1 ) {
+        DevHIDKeyReport( 0x39 );
+        mDelaymS( USB_HID_DELAY_MS );
+    }
+    CapsLock >>= 1;
+}
+
+
 void USBHIDReleaseAllKey(){
     HIDKey[0] = 0;
     HIDKey[1] = 0;
@@ -772,13 +790,7 @@ void USBHIDReleaseAllKey(){
 
 
 void DevASCIIKeyReport( uint8_t c ){
-
-    CapsLock = pEP0_DataBuf[0] & (1<<1);
-
-    if ( CapsLock ) {
-        DevHIDKeyReport( 0x39 );
-        mDelaymS( USB_HID_DELAY_MS );
-    }
+    CapsUnlock();
 
     if (c >= 136) {            // it's a non-printing key (not a modifier)
             return;
@@ -802,11 +814,7 @@ void DevASCIIKeyReport( uint8_t c ){
     memcpy(pEP1_IN_DataBuf, HIDKey, sizeof(HIDKey));
     DevEP1_IN_Deal(sizeof(HIDKey));
 
-    if ( CapsLock ) {
-        mDelaymS( USB_HID_DELAY_MS );
-        HIDKey[0] = 0;
-        DevHIDKeyReport( 0x39 );
-    }
+    RevertCapslock();
 }
 
 
