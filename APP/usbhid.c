@@ -817,6 +817,18 @@ void DevASCIIKeyReport( uint8_t c ){
     RevertCapslock();
 }
 
+void USBHIDASCIIString( uint8_t * s , uint8_t len ){
+    CapsUnlock();
+
+    for (int i = 0; i < len; ++i) {
+        DevASCIIKeyReport( s[i] );
+        mDelaymS( USB_HID_DELAY_MS );
+        USBHIDReleaseAllKey();
+        mDelaymS( USB_HID_DELAY_MS );
+    }
+
+    RevertCapslock();
+}
 
 /*********************************************************************
  * @fn      DevWakeup

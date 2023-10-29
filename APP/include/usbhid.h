@@ -34,6 +34,8 @@ extern void USBHIDReleaseAllKey();
 
 extern void DevASCIIKeyReport( uint8_t c );
 
+extern void USBHIDASCIIString( uint8_t * c , uint8_t len );
+
 extern void DevWakeup(void);
 
 

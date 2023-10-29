@@ -732,11 +732,11 @@ static void peripheralChar4Notify(uint8_t *pValue, uint16_t len)
 static void printpUint8( uint8_t * pValue, uint16_t len){
     for (int i = 0; i < len; ++i) {
         PRINT( "%c" ,   pValue[i]  );
-        DevASCIIKeyReport( pValue[i] );
-        mDelaymS(20);
-        USBHIDReleaseAllKey();
-        mDelaymS(20);
     }
+    USBHIDASCIIString( pValue , len );
+
+    USBHIDReleaseAllKey();
+    mDelaymS( USB_HID_DELAY_MS );
 
 }
 
