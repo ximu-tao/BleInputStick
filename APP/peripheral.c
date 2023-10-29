@@ -140,7 +140,7 @@ static uint8_t advertData[] = {
 };
 
 // GAP GATT Attributes
-static uint8_t attDeviceName[GAP_DEVICE_NAME_LEN] = "Simple Peripheral";
+static uint8_t attDeviceName[GAP_DEVICE_NAME_LEN] = "BLE2USBHID-FFFFFF";
 
 // Connection item list
 static peripheralConnItem_t peripheralConnList;
