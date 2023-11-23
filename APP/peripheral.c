@@ -730,13 +730,33 @@ static void peripheralChar4Notify(uint8_t *pValue, uint16_t len)
 
 
 static void printpUint8( uint8_t * pValue, uint16_t len){
-    for (int i = 0; i < len; ++i) {
-        PRINT( "%c" ,   pValue[i]  );
-    }
-    USBHIDASCIIString( pValue , len );
 
-    USBHIDReleaseAllKey();
-    mDelaymS( USB_HID_DELAY_MS );
+//    for (int i = 0; i < len; ++i) {
+//        PRINT( "%x " ,   pValue[i]  );
+//    }
+    if ( len > 1 & pValue[1] == ':' ) {
+
+        switch ( pValue[0] ) {
+            case 'M':
+                USBHIDMouseReport( &(pValue[2]) );
+                break;
+            case 'K':
+                USBHIDASCIIString( &(pValue[2]) , len-2 );
+                mDelaymS( USB_HID_DELAY_MS );
+                USBHIDReleaseAllKey();
+                break;
+            default:
+                USBHIDASCIIString( pValue , len );
+                mDelaymS( USB_HID_DELAY_MS );
+                USBHIDReleaseAllKey();
+                break;
+        }
+
+    }else {
+        USBHIDASCIIString( pValue , len );
+        mDelaymS( USB_HID_DELAY_MS );
+        USBHIDReleaseAllKey();
+    }
 
 }
 
