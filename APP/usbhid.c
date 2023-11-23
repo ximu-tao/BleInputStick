@@ -742,6 +742,19 @@ void DevHIDMouseReport(uint8_t mouse)
     DevEP2_IN_Deal(sizeof(HIDMouse));
 }
 
+void USBHIDMouseReport(uint8_t * mouse)
+{
+    memcpy(pEP2_IN_DataBuf, mouse, sizeof(4));
+    DevEP2_IN_Deal(sizeof(HIDMouse));
+}
+
+void USBHIDMouseMoveReport( uint8_t x , uint8_t y){
+    HIDMouse[1] = x;
+    HIDMouse[2] = y;
+    memcpy(pEP2_IN_DataBuf, HIDMouse, sizeof(HIDMouse));
+    DevEP2_IN_Deal(sizeof(HIDMouse));
+}
+
 /*********************************************************************
  * @fn      DevHIDKeyReport
  *

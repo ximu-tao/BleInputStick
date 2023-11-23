@@ -28,6 +28,10 @@ extern void USB_DevTransProcess(void);
  */
 extern void DevHIDMouseReport(uint8_t mouse);
 
+extern void USBHIDMouseReport(uint8_t * mouse);
+
+extern void USBHIDMouseMoveReport( uint8_t x , uint8_t y);
+
 extern void DevHIDKeyReport(uint8_t key);
 
 extern void USBHIDReleaseAllKey();
